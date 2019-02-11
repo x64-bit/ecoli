@@ -127,12 +127,13 @@ agg_df.columns = ["'coli'(t-1)",
 # reshape
 # this took me too long because I have a bad skimming habit
 agg_arr = np.asarray(agg_df)
-agg_arr = agg_arr.reshape(13, 4, 7)
+agg_arr = agg_arr.reshape(52, 1, 7)
 print(agg_arr)
 
 # x_train is shaped correctly. not sure about y_train
 x_train, y_train = agg_arr[:, :, :6], agg_arr[:, :, 6:]
-y_train = y_train.squeeze()
+# y_train = y_train.squeeze()
+y_train = y_train.reshape(52,1)
 
 # no idea if I processed the data right but here goes
 
@@ -142,8 +143,8 @@ def build_model():
     # return_sequences shouldn't be true but it works
     # with it for some reason
     model.add(LSTM(
-        6,
-        input_shape=(4, 6),
+        128,
+        input_shape=(1, 6),
         return_sequences=False))
     model.add(Dense(1, activation='linear'))
     return model
@@ -152,5 +153,7 @@ def build_model():
 # help
 test_model = build_model()
 test_model.summary()
-test_model.compile(loss='mean_squared_error', optimizer='adam')
-test_model.fit(x_train, y_train, epochs=200, batch_size=1, shuffle=False)
+test_model.compile(loss='mean_squared_error',
+                   optimizer='adam', metrics=['accuracy'])
+test_model.fit(x_train, y_train, epochs=800, batch_size=1,
+               shuffle=False, validation_data=(x_train, y_train))
