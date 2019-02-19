@@ -79,6 +79,7 @@ def gen_year_early(year, table_name, region, col):
     if (len(week) < 2):
       week = "0" + week
 
+    print("Processing", week + "...")
     # Placeholder
     url = (
         "https://wonder.cdc.gov/nndss/nndss_weekly_tables_1995_2014.asp?mmwr_year={0}&mmwr_week={1}&mmwr_table={2}&request=Submit"
@@ -107,22 +108,26 @@ def gen_year_early(year, table_name, region, col):
           df = df.append([0], ignore_index=True)
 
     print("\tFinished week: " + week)
-    # print(df)
+    print(df)
     df.to_csv("Data/EPI{0}-NNDSS.csv".format(year), encoding='utf-8')
-    time.sleep(5)
+    time.sleep(4)
 
+  df.columns = ['Cases']
+  df.to_csv("Data/EPI{0}-NNDSS.csv".format(year), encoding='utf-8', index=False)
   return df
 
-# df_2006 = gen_year_early("2006", "2G", "pacific", 1)
-# df_2007 = gen_year_early("2007", "2F", "pacific", 6)
-# df_2008 = gen_year_early("2008", "2F", "pacific", 6)
-# df_2009 = gen_year_early("2009", "2F", "pacific", 6)
-# df_2010 = gen_year_early("2010", "2H", "pacific", 6)
-# df_2011 = gen_year_early("2011", "2H", "pacific", 11)
-# df_2012 = gen_year_early("2012", "2H", "pacific", 11)
-# df_2013 = gen_year_early("2013", "2H", "pacific", 11)
-# df_2014 = gen_year_early("2014", "2I", "pacific", 6)
-# df_2015 = gen_year_early("2015", "2K", "pacific", 1)
-# df_2016 = gen_year_early("2016", "2K", "pacific", 1)
-df_2017 = gen_year("2017", "2M", "pacific", 6)
-df_2018 = gen_year("2018", "2O", "pacific", 6)
+df_2006 = gen_year_early("2006", "2G", "pacific", 1)
+"""
+df_2007 = gen_year_early("2007", "2F", "pacific", 6)
+df_2008 = gen_year_early("2008", "2F", "pacific", 6)
+df_2009 = gen_year_early("2009", "2F", "pacific", 6)
+df_2010 = gen_year_early("2010", "2H", "pacific", 6)
+df_2011 = gen_year_early("2011", "2H", "pacific", 11)
+df_2012 = gen_year_early("2012", "2H", "pacific", 11)
+df_2013 = gen_year_early("2013", "2H", "pacific", 11)
+df_2014 = gen_year_early("2014", "2I", "pacific", 6)
+df_2015 = gen_year_early("2015", "2K", "pacific", 1)
+df_2016 = gen_year_early("2016", "2K", "pacific", 1)
+"""
+# df_2017 = gen_year("2017", "2M", "pacific", 6)
+# df_2018 = gen_year("2018", "2O", "pacific", 6)
