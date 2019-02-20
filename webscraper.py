@@ -1,4 +1,8 @@
-# -*- coding: utf-8 -*-
+"""Contains several methods for scraping CDC NNDSS data.
+
+Author: Anjo P.
+Date: 2/20/19
+"""
 
 from tqdm import tqdm
 from bs4 import BeautifulSoup
@@ -60,6 +64,7 @@ def gen_year(year, table_name, region, col):
 
   return df
 
+
 def gen_year_early(year, table_name, region, col):
   """Generates Pandas DataFrame with a year's worth of data for CDC MMWR tables. (-2016)
   
@@ -115,6 +120,7 @@ def gen_year_early(year, table_name, region, col):
   df.columns = ['Cases']
   df.to_csv("Data/EPI{0}-NNDSS.csv".format(year), encoding='utf-8', index=False)
   return df
+
 
 df_2006 = gen_year_early("2006", "2G", "pacific", 1)
 """

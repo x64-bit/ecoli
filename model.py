@@ -1,8 +1,20 @@
+"""First working prototype of this model. Achieves an RMSE of ~4.5
+after 250 epochs.
+
+Author: Anjo P.
+Date: 2/20/19
+"""
+# TODO: test code on different CDC regions
+# TODO: clean code
+# TODO: separate preprocessing into a different file
+
 # data wrangling
 import pandas as pd
 import csv
 import numpy as np
 import matplotlib.pyplot as plt
+from math import sqrt
+from sklearn.metrics import mean_squared_error
 
 # pytrends
 from pytrends.request import TrendReq
@@ -59,7 +71,6 @@ for i in range(10):
   epi_df = pd.concat([epi_df, temp_df])
 
 epi_df = epi_df.reset_index(drop=True)
-# print(trends_df)
 
 trends_df.drop(['isPartial'], axis=1, inplace=True)
 trends_df.reset_index(drop=True, inplace=True)
@@ -72,20 +83,6 @@ pred_df = epi_df
 # concatenate all data and shift one back. pred_df will be predictions
 agg_df = pd.concat([trends_df, epi_df], axis=1).shift(-1)
 
-# I also put them all into a DataFrame but I figured separating them was easier
-'''
-agg_df = pd.concat([agg_df, pred_df], axis=1)
-
-agg_df.columns = ["'symptoms of e coli'(t-1)",
-                 "'coli'(t-1)",
-                 "'signs of e coli'(t-1)",
-                 "'e coli symptoms'(t-1)",
-                 "'e coli'(t-1)",
-                 "Cases(t-1)",
-                 "Cases(t)",
-                 ]
-'''
-
 agg_df = agg_df.fillna(0)
 print(agg_df)
 
@@ -96,6 +93,15 @@ print(x_arr)
 y_arr = np.asarray(pred_df)
 print(y_arr)
 
+split = int(round(0.2 * x_arr.shape[0]))
+print("Training data has", split, "rows")
+X_train = x_arr[split:, :, :]
+Y_train = y_arr[split:, :]
+x_test = x_arr[:split, :, :]
+y_test = y_arr[:split, ]
+
+print(X_train.shape)
+print(Y_train.shape)
 
 def build_model():
     model = Sequential()
@@ -110,10 +116,25 @@ def build_model():
 
 
 # help
-adam_optimizer = adam(lr=0.001)
 test_model = build_model()
 test_model.summary()
 test_model.compile(loss='mean_squared_error',
-                   optimizer=adam_optimizer, metrics=['accuracy'])
-test_model.fit(x_arr, y_arr, epochs=800, batch_size=1,
+                   optimizer='adam', metrics=['accuracy'])
+test_model.fit(X_train, Y_train, epochs=250, batch_size=1,
                shuffle=False, validation_data=(x_arr, y_arr))
+
+predicted = test_model.predict(x_test)
+predicted = np.reshape(predicted, (predicted.size,))
+print("\n")
+print(predicted.shape)
+print(y_test.shape)
+print("\n")
+
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.plot(y_test[:100])
+plt.plot(predicted[:100])
+plt.show()
+
+rmse = sqrt(mean_squared_error(y_test, predicted))
+print(rmse)
