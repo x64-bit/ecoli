@@ -120,6 +120,7 @@ test_model = build_model()
 test_model.summary()
 test_model.compile(loss='mean_squared_error',
                    optimizer='adam', metrics=['accuracy'])
+print("\n\n-------------------\nFit Numero Uno\n\n")
 test_model.fit(X_train, Y_train, epochs=250, batch_size=1,
                shuffle=False, validation_data=(x_arr, y_arr))
 
@@ -137,4 +138,24 @@ plt.plot(predicted[:100])
 plt.show()
 
 rmse = sqrt(mean_squared_error(y_test, predicted))
-print(rmse)
+print("rmse=",rmse)
+
+print("\n\n-------------------\nFit Numero Dos\n\n")
+test_model.fit(X_train, Y_train, epochs=250, batch_size=1,
+               shuffle=False, validation_data=(x_arr, y_arr))
+
+predicted = test_model.predict(x_test)
+predicted = np.reshape(predicted, (predicted.size,))
+print("\n")
+print(predicted.shape)
+print(y_test.shape)
+print("\n")
+
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.plot(y_test[:100])
+plt.plot(predicted[:100])
+plt.show()
+
+rmse = sqrt(mean_squared_error(y_test, predicted))
+print("rmse=", rmse)
