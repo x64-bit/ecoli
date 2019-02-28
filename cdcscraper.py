@@ -31,6 +31,7 @@ def gen_year(year, table_name, region, col):
     week = str(i+1)
     if (len(week) < 2):
       week = "0" + week
+    print("Processing week", week)
 
     # Placeholder
     url = (
@@ -42,7 +43,14 @@ def gen_year(year, table_name, region, col):
     soup = BeautifulSoup(r.content, 'html.parser')
 
     # Look for the table body (tbody), then extract all table rows (tr)
-    rows = soup.select('table tr')
+    # breaks with 2017 because NNDSS errata is formatted as table
+    if (year == "2017" and week == "21"):
+      print("broken row, parsing...")
+      tables = soup.find_all('table')
+      case_table = tables[1]
+      rows = case_table.select('tr')
+    else:
+      rows = soup.select('table tr')
     for row in rows:
       # Extract header, convert to text, eliminate whitespace, use lowercase
       if (row.select_one('th').text.strip().lower() == region.lower()):
@@ -60,8 +68,11 @@ def gen_year(year, table_name, region, col):
 
     print("Finished week: " + week)
     print(df)
-    time.sleep(5)
-
+    df.to_csv("Data/EPI{0}-NNDSS.csv".format(year), encoding='utf-8')
+    time.sleep(2.5)
+  
+  df.columns = ['Cases']
+  df.to_csv("Data/EPI{0}-NNDSS.csv".format(year), encoding='utf-8', index=False)
   return df
 
 
@@ -122,7 +133,7 @@ def gen_year_early(year, table_name, region, col):
   return df
 
 
-df_2006 = gen_year_early("2006", "2G", "pacific", 1)
+# df_2006 = gen_year_early("2006", "2G", "pacific", 1)
 """
 df_2007 = gen_year_early("2007", "2F", "pacific", 6)
 df_2008 = gen_year_early("2008", "2F", "pacific", 6)
@@ -135,5 +146,5 @@ df_2014 = gen_year_early("2014", "2I", "pacific", 6)
 df_2015 = gen_year_early("2015", "2K", "pacific", 1)
 df_2016 = gen_year_early("2016", "2K", "pacific", 1)
 """
-# df_2017 = gen_year("2017", "2M", "pacific", 6)
-# df_2018 = gen_year("2018", "2O", "pacific", 6)
+df_2017 = gen_year("2017", "2M", "pacific", 6)
+df_2018 = gen_year("2018", "2O", "pacific", 6)
