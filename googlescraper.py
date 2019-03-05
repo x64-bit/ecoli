@@ -32,8 +32,19 @@ kw_list = ["symptoms of e coli",
            "e coli"
           ]
 
+# region
+# pacific [x]
+# mountain [x]
+# new england [x]
+# middle atlantic [x]
+# south atlantic [x]
+# east north central [x]
+# east south central [x]
+# west north central [x]
+# west south central [x]
+region = "pacific"
 # states to parse
-states = ["AK","CA","HI","OR","WA"]
+states = ["AK", "CA", "HI", "OR", "WA"]
 
 for state in states:
   print("Processing", state + "...")
@@ -71,5 +82,5 @@ trends_df.reset_index(drop=True, inplace=True)
 trends_df = trends_df.div(len(states))
 
 # write to csv
-trends_df.to_csv("data/pacific/SEARCH20XX.csv", encoding='utf-8', index=False)
+trends_df.to_csv("data/{0}/SEARCH20XX.csv".format(region), encoding='utf-8', index=False)
 

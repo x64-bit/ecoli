@@ -4,6 +4,16 @@
 I know I could do that in the same file as the other ones, just feel like it's
 neater here.
 """
+# TODO
+# pacific [x]
+# mountain [x]
+# new england [x]
+# middle atlantic [x]
+# south atlantic [x]
+# east north central [x]
+# east south central [x]
+# west north central [x]
+# west south central [x]
 
 # data wrangling
 import pandas as pd
@@ -15,8 +25,10 @@ from sklearn.metrics import mean_squared_error
 # just in case
 import matplotlib.pyplot as plt
 
+region = "pacific"
+
 # will parse instead
-trends_df = pd.read_csv("data/pacific/SEARCH20XX.csv")
+trends_df = pd.read_csv("data/{0}/SEARCH20XX.csv".format(region))
 
 # set up epidemic case dataframe
 epi_df = pd.DataFrame()
@@ -30,7 +42,7 @@ for i in range(12):
   year = 2006 + i
   
   # append new epidemic data
-  temp_df = pd.read_csv("data/pacific/EPI{0}-NNDSS.csv".format(year))
+  temp_df = pd.read_csv("data/{0}/EPI{1}-NNDSS.csv".format(region,year))
   # for some reason the CDC data duplicated the data for week 48 of 2006
   # I have to account for this
   if (year == 2006):
@@ -51,8 +63,10 @@ agg_df = pd.concat([trends_df.shift(-1), epi_df.shift(-1)], axis=1)
 # fill missing values
 agg_df = agg_df.fillna(0)
 
-agg_df.to_csv("data/pacific/AGGDATA.csv", encoding='utf-8', index=False)
-pred_df.to_csv("data/pacific/PREDDATA.csv", encoding='utf-8', index=False)
+agg_df.to_csv("data/{0}/AGGDATA.csv".format(region),
+              encoding='utf-8', index=False)
+pred_df.to_csv("data/{0}/PREDDATA.csv".format(region),
+               encoding='utf-8', index=False)
 
 """Below was moved to the model definition script
 It's kept here for archival purposes.
