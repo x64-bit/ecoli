@@ -11,6 +11,7 @@ import requests
 import json
 import pandas as pd
 import time
+import os
 
 
 def gen_year(year, table_name, region, col):
@@ -22,9 +23,13 @@ def gen_year(year, table_name, region, col):
   region (str) - region to pull from table
   col (int) - column to pull from table
   """
+  filepath = "Data/{0}".format(region)
+
   # Placeholder dataframe
   df = pd.DataFrame()
   print("Processing year: " + year + "...")
+  if (not os.path.exists(filepath)):
+    os.mkdir(filepath)
 
   for i in range(52):
     # Week num
@@ -68,11 +73,13 @@ def gen_year(year, table_name, region, col):
 
     print("Finished week: " + week)
     print(df)
-    df.to_csv("Data/EPI{0}-NNDSS.csv".format(year), encoding='utf-8')
-    time.sleep(2.5)
+    df.to_csv("Data/{0}/EPI{1}-NNDSS.csv".format(region, year),
+              encoding='utf-8')
+    time.sleep(4)
   
   df.columns = ['Cases']
-  df.to_csv("Data/EPI{0}-NNDSS.csv".format(year), encoding='utf-8', index=False)
+  df.to_csv("Data/{0}/EPI{1}-NNDSS.csv".format(region, year), encoding='utf-8', index=False)
+  # f.close()
   return df
 
 
@@ -88,6 +95,9 @@ def gen_year_early(year, table_name, region, col):
   # Placeholder dataframe
   df = pd.DataFrame()
   print("Processing year: " + year + "...")
+  filepath = "Data/{0}".format(region)
+  if (not os.path.exists(filepath)):
+    os.mkdir(filepath)
 
   for i in range(52):
     # Week num
@@ -112,7 +122,7 @@ def gen_year_early(year, table_name, region, col):
 
     for row in rows:
       tds = row.select('td')
-      if (tds[0].text.strip().lower() == "pacific"):
+      if (tds[0].text.strip().lower() == region.lower()):
         print("Row found!")
         # Find specified col
         cases = tds[col].text.strip()
@@ -125,15 +135,17 @@ def gen_year_early(year, table_name, region, col):
 
     print("\tFinished week: " + week)
     print(df)
-    df.to_csv("Data/EPI{0}-NNDSS.csv".format(year), encoding='utf-8')
+    df.to_csv("Data/{0}/EPI{1}-NNDSS.csv".format(region, year), encoding='utf-8')
     time.sleep(4)
 
   df.columns = ['Cases']
-  df.to_csv("Data/EPI{0}-NNDSS.csv".format(year), encoding='utf-8', index=False)
+  df.to_csv("Data/{0}/EPI{1}-NNDSS.csv".format(region, year),
+            encoding='utf-8', index=False)
+  # f.close()
   return df
 
-
-"""Scraping for Pacific
+"""
+# Scraping for Pacific
 df_2006 = gen_year_early("2006", "2G", "pacific", 1)
 df_2007 = gen_year_early("2007", "2F", "pacific", 6)
 df_2008 = gen_year_early("2008", "2F", "pacific", 6)
@@ -147,8 +159,6 @@ df_2015 = gen_year_early("2015", "2K", "pacific", 1)
 df_2016 = gen_year_early("2016", "2K", "pacific", 1)
 df_2017 = gen_year("2017", "2M", "pacific", 6)
 df_2018 = gen_year("2018", "2O", "pacific", 6)
-"""
-
 # Scraping for Mountain
 df_2006 = gen_year_early("2006", "2G", "mountain", 1)
 df_2007 = gen_year_early("2007", "2F", "mountain", 6)
@@ -163,3 +173,110 @@ df_2015 = gen_year_early("2015", "2K", "mountain", 1)
 df_2016 = gen_year_early("2016", "2K", "mountain", 1)
 df_2017 = gen_year("2017", "2M", "mountain", 6)
 df_2018 = gen_year("2018", "2O", "mountain", 6)
+time.sleep(30)
+# Scraping for New England
+df_2006 = gen_year_early("2006", "2G", "new england", 1)
+df_2007 = gen_year_early("2007", "2F", "new england", 6)
+df_2008 = gen_year_early("2008", "2F", "new england", 6)
+df_2009 = gen_year_early("2009", "2F", "new england", 6)
+df_2010 = gen_year_early("2010", "2H", "new england", 6)
+df_2011 = gen_year_early("2011", "2H", "new england", 11)
+df_2012 = gen_year_early("2012", "2H", "new england", 11)
+df_2013 = gen_year_early("2013", "2H", "new england", 11)
+"""
+df_2014 = gen_year_early("2014", "2I", "new england", 6)
+df_2015 = gen_year_early("2015", "2K", "new england", 1)
+df_2016 = gen_year_early("2016", "2K", "new england", 1)
+df_2017 = gen_year("2017", "2M", "new england", 6)
+df_2018 = gen_year("2018", "2O", "new england", 6)
+time.sleep(30)
+# Scraping for Mid. Atlantic
+df_2006 = gen_year_early("2006", "2G", "mid. atlantic", 1)
+df_2007 = gen_year_early("2007", "2F", "mid. atlantic", 6)
+df_2008 = gen_year_early("2008", "2F", "mid. atlantic", 6)
+df_2009 = gen_year_early("2009", "2F", "mid. atlantic", 6)
+df_2010 = gen_year_early("2010", "2H", "mid. atlantic", 6)
+df_2011 = gen_year_early("2011", "2H", "mid. atlantic", 11)
+df_2012 = gen_year_early("2012", "2H", "mid. atlantic", 11)
+df_2013 = gen_year_early("2013", "2H", "mid. atlantic", 11)
+df_2014 = gen_year_early("2014", "2I", "mid. atlantic", 6)
+df_2015 = gen_year_early("2015", "2K", "mid. atlantic", 1)
+df_2016 = gen_year_early("2016", "2K", "mid. atlantic", 1)
+df_2017 = gen_year("2017", "2M", "mid. atlantic", 6)
+df_2018 = gen_year("2018", "2O", "middle atlantic", 6)
+time.sleep(30)
+# Scraping for South Atlantic
+df_2006 = gen_year_early("2006", "2G", "s. atlantic", 1)
+df_2007 = gen_year_early("2007", "2F", "s. atlantic", 6)
+df_2008 = gen_year_early("2008", "2F", "s. atlantic", 6)
+df_2009 = gen_year_early("2009", "2F", "s. atlantic", 6)
+df_2010 = gen_year_early("2010", "2H", "s. atlantic", 6)
+df_2011 = gen_year_early("2011", "2H", "s. atlantic", 11)
+df_2012 = gen_year_early("2012", "2H", "s. atlantic", 11)
+df_2013 = gen_year_early("2013", "2H", "s. atlantic", 11)
+df_2014 = gen_year_early("2014", "2I", "s. atlantic", 6)
+df_2015 = gen_year_early("2015", "2K", "s. atlantic", 1)
+df_2016 = gen_year_early("2016", "2K", "s. atlantic", 1)
+df_2017 = gen_year("2017", "2M", "s. atlantic", 6)
+df_2018 = gen_year("2018", "2O", "south atlantic", 6)
+time.sleep(30)
+# Scraping E.N Central
+df_2006 = gen_year_early("2006", "2G", "E.N. CENTRAL", 1)
+df_2007 = gen_year_early("2007", "2F", "E.N. CENTRAL", 6)
+df_2008 = gen_year_early("2008", "2F", "E.N. CENTRAL", 6)
+df_2009 = gen_year_early("2009", "2F", "E.N. CENTRAL", 6)
+df_2010 = gen_year_early("2010", "2H", "E.N. CENTRAL", 6)
+df_2011 = gen_year_early("2011", "2H", "E.N. CENTRAL", 11)
+df_2012 = gen_year_early("2012", "2H", "E.N. CENTRAL", 11)
+df_2013 = gen_year_early("2013", "2H", "E.N. CENTRAL", 11)
+df_2014 = gen_year_early("2014", "2I", "E.N. CENTRAL", 6)
+df_2015 = gen_year_early("2015", "2K", "E.N. CENTRAL", 1)
+df_2016 = gen_year_early("2016", "2K", "E.N. CENTRAL", 1)
+df_2017 = gen_year("2017", "2M", "E.N. CENTRAL", 6)
+df_2018 = gen_year("2018", "2O", "East North Central", 6)
+time.sleep(30)
+# Scraping W.N Central
+df_2006 = gen_year_early("2006", "2G", "W.N. CENTRAL", 1)
+df_2007 = gen_year_early("2007", "2F", "W.N. CENTRAL", 6)
+df_2008 = gen_year_early("2008", "2F", "W.N. CENTRAL", 6)
+df_2009 = gen_year_early("2009", "2F", "W.N. CENTRAL", 6)
+df_2010 = gen_year_early("2010", "2H", "W.N. CENTRAL", 6)
+df_2011 = gen_year_early("2011", "2H", "W.N. CENTRAL", 11)
+df_2012 = gen_year_early("2012", "2H", "W.N. CENTRAL", 11)
+df_2013 = gen_year_early("2013", "2H", "W.N. CENTRAL", 11)
+df_2014 = gen_year_early("2014", "2I", "W.N. CENTRAL", 6)
+df_2015 = gen_year_early("2015", "2K", "W.N. CENTRAL", 1)
+df_2016 = gen_year_early("2016", "2K", "W.N. CENTRAL", 1)
+df_2017 = gen_year("2017", "2M", "W.N. CENTRAL", 6)
+df_2018 = gen_year("2018", "2O", "West North Central", 6)
+time.sleep(30)
+# Scraping W.S Central
+df_2006 = gen_year_early("2006", "2G", "W.S. CENTRAL", 1)
+df_2007 = gen_year_early("2007", "2F", "W.S. CENTRAL", 6)
+df_2008 = gen_year_early("2008", "2F", "W.S. CENTRAL", 6)
+df_2009 = gen_year_early("2009", "2F", "W.S. CENTRAL", 6)
+df_2010 = gen_year_early("2010", "2H", "W.S. CENTRAL", 6)
+df_2011 = gen_year_early("2011", "2H", "W.S. CENTRAL", 11)
+df_2012 = gen_year_early("2012", "2H", "W.S. CENTRAL", 11)
+df_2013 = gen_year_early("2013", "2H", "W.S. CENTRAL", 11)
+df_2014 = gen_year_early("2014", "2I", "W.S. CENTRAL", 6)
+df_2015 = gen_year_early("2015", "2K", "W.S. CENTRAL", 1)
+df_2016 = gen_year_early("2016", "2K", "W.S. CENTRAL", 1)
+df_2017 = gen_year("2017", "2M", "W.S. CENTRAL", 6)
+df_2018 = gen_year("2018", "2O", "West South Central", 6)
+time.sleep(30)
+# Scraping W.S Central
+df_2006 = gen_year_early("2006", "2G", "E.S. CENTRAL", 1)
+df_2007 = gen_year_early("2007", "2F", "E.S. CENTRAL", 6)
+df_2008 = gen_year_early("2008", "2F", "E.S. CENTRAL", 6)
+df_2009 = gen_year_early("2009", "2F", "E.S. CENTRAL", 6)
+df_2010 = gen_year_early("2010", "2H", "E.S. CENTRAL", 6)
+df_2011 = gen_year_early("2011", "2H", "E.S. CENTRAL", 11)
+df_2012 = gen_year_early("2012", "2H", "E.S. CENTRAL", 11)
+df_2013 = gen_year_early("2013", "2H", "E.S. CENTRAL", 11)
+df_2014 = gen_year_early("2014", "2I", "E.S. CENTRAL", 6)
+df_2015 = gen_year_early("2015", "2K", "E.S. CENTRAL", 1)
+df_2016 = gen_year_early("2016", "2K", "E.S. CENTRAL", 1)
+df_2017 = gen_year("2017", "2M", "E.S. CENTRAL", 6)
+df_2018 = gen_year("2018", "2O", "East South Central", 6)
+time.sleep(30)
