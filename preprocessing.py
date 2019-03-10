@@ -25,7 +25,7 @@ from sklearn.metrics import mean_squared_error
 # just in case
 import matplotlib.pyplot as plt
 
-region = "pacific"
+region = "west south central"
 
 # will parse instead
 trends_df = pd.read_csv("data/{0}/SEARCH20XX.csv".format(region))

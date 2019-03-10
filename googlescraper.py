@@ -42,9 +42,9 @@ kw_list = ["symptoms of e coli",
 # east south central [x]
 # west north central [x]
 # west south central [x]
-region = "pacific"
+region = "west south central"
 # states to parse
-states = ["AK", "CA", "HI", "OR", "WA"]
+states = ["AK", "LA", "OK", "TX", "LA"]
 
 for state in states:
   print("Processing", state + "...")

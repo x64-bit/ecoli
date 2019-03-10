@@ -85,6 +85,21 @@ for region in regions:
     model.fit(X_train, Y_train, epochs=250, batch_size=1,
                 shuffle=False, validation_data=(x_arr, y_arr))
 
+agg_df = pd.read_csv("data/pacific/AGGDATA.csv")
+pred_df = pd.read_csv("data/pacific/PREDDATA.csv")
+
+x_arr = np.asarray(agg_df)
+x_arr = x_arr.reshape(624, 1, 6)
+
+y_arr = np.asarray(pred_df)
+
+split = int(round(0.2 * x_arr.shape[0]))
+print("Training data has", split, "rows")
+X_train = x_arr[split:, :, :]
+Y_train = y_arr[split:, :]
+x_test = x_arr[:split, :, :]
+y_test = y_arr[:split, ]
+
 # predicc
 predicted = model.predict(x_test)
 predicted = np.reshape(predicted, (predicted.size,))
