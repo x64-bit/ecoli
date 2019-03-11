@@ -22,27 +22,6 @@ from keras.layers.recurrent import LSTM
 from keras.models import Sequential
 from keras.optimizers import adam
 
-# pacific
-# mountain
-# new england
-# middle atlantic
-# south atlantic
-# east north central
-# east south central
-# west north central
-# west south central
-
-# pacific not included for testing
-regions = ["mountain",
-            "new england",
-            "middle atlantic",
-            "south atlantic",
-            "east north central",
-            "east south central",
-            "west north central",
-            "west south central"]
-
-
 def build_model():
     temp_model = Sequential()
     # return_sequences shouldn't be true but it works
@@ -61,31 +40,31 @@ def build_model():
 
 model = build_model()
 
-for region in regions:
-    agg_df = pd.read_csv("data/{0}/AGGDATA.csv".format(region))
-    pred_df = pd.read_csv("data/{0}/PREDDATA.csv".format(region))
+agg_df = pd.read_csv("data/TOTALINPUT.csv")
+pred_df = pd.read_csv("data/TOTALPRED.csv")
 
-    x_arr = np.asarray(agg_df)
-    x_arr = x_arr.reshape(624, 1, 6)
-    print(x_arr)
+x_arr = np.asarray(agg_df)
+x_arr = x_arr.reshape(5615, 1, 6)
+print(x_arr)
 
-    y_arr = np.asarray(pred_df)
-    print(y_arr)
+y_arr = np.asarray(pred_df)
+print(y_arr)
 
-    split = int(round(0.2 * x_arr.shape[0]))
-    print("Training data has", split, "rows")
-    X_train = x_arr[split:, :, :]
-    Y_train = y_arr[split:, :]
-    x_test = x_arr[:split, :, :]
-    y_test = y_arr[:split, ]
+split = int(round(0.2 * x_arr.shape[0]))
+print("Training data has", split, "rows")
+X_train = x_arr[split:, :, :]
+Y_train = y_arr[split:, :]
+x_test = x_arr[:split, :, :]
+y_test = y_arr[:split, ]
 
-    print(X_train.shape)
-    print(Y_train.shape)
+print(X_train.shape)
+print(Y_train.shape)
 
-    # print("\n\n-------------------\nFit Numero Uno\n\n")
-    model.fit(X_train, Y_train, epochs=250, batch_size=1,
-                shuffle=False, validation_data=(x_arr, y_arr))
+# print("\n\n-------------------\nFit Numero Uno\n\n")
+model.fit(X_train, Y_train, epochs=250, batch_size=1,
+            shuffle=False, validation_data=(x_arr, y_arr))
 
+"""
 agg_df = pd.read_csv("data/pacific/AGGDATA.csv")
 pred_df = pd.read_csv("data/pacific/PREDDATA.csv")
 
@@ -93,6 +72,7 @@ x_arr = np.asarray(agg_df)
 x_arr = x_arr.reshape(624, 1, 6)
 
 y_arr = np.asarray(pred_df)
+"""
 
 split = int(round(0.2 * x_arr.shape[0]))
 print("Training data has", split, "rows")
