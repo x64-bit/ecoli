@@ -55,7 +55,7 @@ def build_model():
 
     # compile model
     temp_model.summary()
-    temp_model.compile(loss='mean_squared_error',
+    temp_model.compile(loss='mean_absolute_error',
                        optimizer='adam', metrics=['accuracy'])
     return temp_model
 

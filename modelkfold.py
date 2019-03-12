@@ -34,7 +34,7 @@ def build_model():
 
     # compile model
     temp_model.summary()
-    temp_model.compile(loss='mean_squared_error',
+    temp_model.compile(loss='mean_absolute_error',
                        optimizer='adam', metrics=['accuracy'])
     return temp_model
 
@@ -61,7 +61,7 @@ print(X_train.shape)
 print(Y_train.shape)
 
 # print("\n\n-------------------\nFit Numero Uno\n\n")
-model.fit(X_train, Y_train, epochs=250, batch_size=1,
+model.fit(X_train, Y_train, epochs=600, batch_size=1,
             shuffle=False, validation_data=(x_arr, y_arr))
 
 """
@@ -73,13 +73,6 @@ x_arr = x_arr.reshape(624, 1, 6)
 
 y_arr = np.asarray(pred_df)
 """
-
-split = int(round(0.2 * x_arr.shape[0]))
-print("Training data has", split, "rows")
-X_train = x_arr[split:, :, :]
-Y_train = y_arr[split:, :]
-x_test = x_arr[:split, :, :]
-y_test = y_arr[:split, ]
 
 # predicc
 predicted = model.predict(x_test)
