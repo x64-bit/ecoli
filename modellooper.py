@@ -109,11 +109,11 @@ print(predicted.shape)
 print(y_test.shape)
 print("\n")
 
+rmse = sqrt(mean_squared_error(y_test, predicted))
+print("rmse=", rmse)
+
 fig = plt.figure()
 ax = fig.add_subplot(111)
 ax.plot(y_test[:100])
 plt.plot(predicted[:100])
 plt.show()
-
-rmse = sqrt(mean_squared_error(y_test, predicted))
-print("rmse=",rmse)

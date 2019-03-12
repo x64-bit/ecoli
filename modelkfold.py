@@ -27,7 +27,7 @@ def build_model():
     # return_sequences shouldn't be true but it works
     # with it for some reason
     temp_model.add(LSTM(
-        8,
+        64,
         input_shape=(1, 6),
         return_sequences=False))
     temp_model.add(Dense(1, activation='linear'))
@@ -61,7 +61,7 @@ print(X_train.shape)
 print(Y_train.shape)
 
 # print("\n\n-------------------\nFit Numero Uno\n\n")
-model.fit(X_train, Y_train, epochs=600, batch_size=1,
+model.fit(X_train, Y_train, epochs=400, batch_size=1,
             shuffle=False, validation_data=(x_arr, y_arr))
 
 """
@@ -82,11 +82,11 @@ print(predicted.shape)
 print(y_test.shape)
 print("\n")
 
+rmse = sqrt(mean_squared_error(y_test, predicted))
+print("rmse=", rmse)
+
 fig = plt.figure()
 ax = fig.add_subplot(111)
 ax.plot(y_test[:100])
 plt.plot(predicted[:100])
 plt.show()
-
-rmse = sqrt(mean_squared_error(y_test, predicted))
-print("rmse=",rmse)
