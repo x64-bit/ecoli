@@ -14,7 +14,7 @@ import csv
 import numpy as np
 import matplotlib.pyplot as plt
 from math import sqrt
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, mean_absolute_error
 
 # machine learning stuff
 from keras.layers.core import Dense, Activation, Dropout, Flatten
@@ -33,17 +33,20 @@ from keras.optimizers import adam
 # west south central
 
 # pacific not included for testing
-regions = ["mountain",
-            "new england",
-            "middle atlantic",
-            "south atlantic",
-            "east north central",
-            "east south central",
-            "west north central",
-            "west south central"]
+regions = ["pacific",
+    "mountain",
+    "new england",
+    "middle atlantic",
+    "south atlantic",
+    "east north central",
+    "east south central",
+    "west north central",
+    "west south central"]
 
+epochs = 1
 
 def build_model():
+    """Builds a model"""
     temp_model = Sequential()
     # return_sequences shouldn't be true but it works
     # with it for some reason
@@ -51,90 +54,77 @@ def build_model():
         16,
         input_shape=(1, 6),
         return_sequences=False))
+    # avoid overfitting
     temp_model.add(Dropout(0.2))
     temp_model.add(Dense(1, activation='linear'))
 
     # compile model
     temp_model.summary()
     temp_model.compile(loss='mean_squared_error',
-                       optimizer='adam', metrics=['accuracy'])
+                       optimizer='adam', metrics=['mean_absolute_error'])
     return temp_model
 
-model = build_model()
+for removed_region in regions:
+    print("\n\n\nBeginning new fold...\n-----------------------------\n\n\n")
+    print("Removing region", removed_region,
+          "\n\n\n-----------------------------")
+    temp_regions = regions.copy()
+    temp_regions.remove(removed_region)
 
-for region in regions:
-    # read data
-    agg_df = pd.read_csv("data/{0}/AGGDATA.csv".format(region))
-    pred_df = pd.read_csv("data/{0}/PREDDATA.csv".format(region))
+    print("Building new model...\n\n\n-----------------------------")
+    model = build_model()
+    
+    for region in temp_regions:
+        print("Training on regions", temp_regions)
+        # read data from specified region
+        agg_df = pd.read_csv("data/{0}/AGGDATA.csv".format(region))
+        pred_df = pd.read_csv("data/{0}/PREDDATA.csv".format(region))
 
-    x_arr = np.asarray(agg_df)
-    x_arr = x_arr.reshape(676, 1, 6)
+        # convert to arrays, reshape to fit
+        x_arr = np.asarray(agg_df)
+        x_arr = x_arr.reshape(676, 1, 6)
+        y_arr = np.asarray(pred_df)
 
-    y_arr = np.asarray(pred_df)
+        # rows used for training
+        train_split = int(round(0.7 * x_arr.shape[0]))
+        # last row of validation (first row is row after end of train split)
+        val_split = int(round(0.85 * x_arr.shape[0]))
+        print("Training data has", train_split, "rows")
+        # split train
+        X_train = x_arr[:train_split, :, :]
+        Y_train = y_arr[:train_split, :]
+        # split val
+        x_val = x_arr[train_split:val_split, :, :]
+        y_val = y_arr[train_split:val_split, ]
+        # split test
+        x_test = x_arr[val_split:, :, :]
+        y_test = y_arr[val_split:, ]
 
-    split = int(round(0.8 * x_arr.shape[0]))
-    print("Training data has", split, "rows")
-    X_train = x_arr[:split, :, :]
-    Y_train = y_arr[:split, :]
-    x_test = x_arr[split:, :, :]
-    y_test = y_arr[split:, ]
+        print(X_train.shape)
+        print(Y_train.shape)
 
-    print(X_train.shape)
-    print(Y_train.shape)
+        # fit on sample for 250 epochs
+        model.fit(X_train, Y_train, epochs=epochs, batch_size=1,
+                    shuffle=False, validation_data=(x_arr, y_arr))
 
-    # print("\n\n-------------------\nFit Numero Uno\n\n")
-    model.fit(X_train, Y_train, epochs=250, batch_size=1,
-                shuffle=False, validation_data=(x_arr, y_arr))
+        """Create predictions"""
+        predicted = model.predict(x_test)
+        predicted = np.reshape(predicted, (predicted.size,))
+        print("\n")
+        print(predicted.shape)
+        print(y_test.shape)
+        print("\n")
 
-    # predicc
-    predicted = model.predict(x_test)
-    predicted = np.reshape(predicted, (predicted.size,))
-    print("\n")
-    print(predicted.shape)
-    print(y_test.shape)
-    print("\n")
+        rmse = sqrt(mean_squared_error(y_test, predicted))
+        mae = mean_absolute_error(y_test, predicted)
+        print("rmse=", rmse)
+        print("mae=", mae)
 
-    rmse = sqrt(mean_squared_error(y_test, predicted))
-    print("rmse=", rmse)
-
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    ax.plot(y_test[:250])
-    plt.plot(predicted[:250])
-    plt.savefig("test.png")
-    plt.close()
-
-agg_df = pd.read_csv("data/pacific/AGGDATA.csv")
-pred_df = pd.read_csv("data/pacific/PREDDATA.csv")
-naive_df = agg_df.loc[:, "Cases"]
-
-x_arr = np.asarray(agg_df)
-x_arr = x_arr.reshape(676, 1, 6)
-
-y_arr = np.asarray(pred_df)
-baseline = np.asarray(naive_df)
-
-split = int(round(0.8 * x_arr.shape[0]))
-print("Training data has", split, "rows")
-X_train = x_arr[:split, :, :]
-Y_train = y_arr[:split, :]
-x_test = x_arr[split:, :, :]
-y_test = y_arr[split:, ]
-
-# predicc
-predicted = model.predict(x_test)
-predicted = np.reshape(predicted, (predicted.size,))
-print("\n")
-print(predicted.shape)
-print(y_test.shape)
-print("\n")
-
-rmse = sqrt(mean_squared_error(y_test, predicted))
-print("rmse=", rmse)
-
-fig = plt.figure()
-ax = fig.add_subplot(111)
-ax.plot(y_test[:250])
-plt.plot(predicted[:250])
-plt.savefig("test.png")
-plt.close()
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        ax.plot(y_test[:100])
+        plt.plot(predicted[:100])
+        plt.savefig("test.png")
+        plt.close()
+    
+    model.save("models/{0} removed.h5".format(removed_region))
