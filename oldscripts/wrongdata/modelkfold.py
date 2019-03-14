@@ -1,9 +1,4 @@
-"""First working prototype of this model. Achieves an RMSE of ~4.5
-after 250 epochs.
-
-Author: Anjo P.
-Date: 2/20/19
-"""
+"""Deprecated. Used incorrectly prepared training data."""
 # TODO: test code on different CDC regions
 # TODO: clean code
 # TODO: separate preprocessing into a different file
@@ -21,13 +16,14 @@ from keras.layers.core import Dense, Activation, Dropout, Flatten
 from keras.layers.recurrent import LSTM
 from keras.models import Sequential
 from keras.optimizers import adam
+from keras.models import load_model
 
 def build_model():
     temp_model = Sequential()
     # return_sequences shouldn't be true but it works
     # with it for some reason
     temp_model.add(LSTM(
-        64,
+        16,
         input_shape=(1, 6),
         return_sequences=False))
     temp_model.add(Dense(1, activation='linear'))
@@ -61,7 +57,7 @@ print(X_train.shape)
 print(Y_train.shape)
 
 # print("\n\n-------------------\nFit Numero Uno\n\n")
-model.fit(X_train, Y_train, epochs=400, batch_size=1,
+model.fit(X_train, Y_train, epochs=1, batch_size=1,
             shuffle=False, validation_data=(x_arr, y_arr))
 
 """
@@ -85,8 +81,26 @@ print("\n")
 rmse = sqrt(mean_squared_error(y_test, predicted))
 print("rmse=", rmse)
 
+model.save("test.h5")
+
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.plot(y_test[:100])
+plt.plot(predicted[:100])
+plt.savefig("test.png")
+plt.close()
+
+# print("\n\n-------------------\nFit Numero Uno\n\n")
+model.fit(X_train, Y_train, epochs=1000, batch_size=1,
+          shuffle=False, validation_data=(x_arr, y_arr))
+
+rmse = sqrt(mean_squared_error(y_test, predicted))
+print("rmse=", rmse)
+
 fig = plt.figure()
 ax = fig.add_subplot(111)
 ax.plot(y_test[:100])
 plt.plot(predicted[:100])
 plt.show()
+plt.close()
+

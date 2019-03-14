@@ -54,7 +54,7 @@ for state in states:
   # if you open multiple years in Google Trends, it will only let you download
   # .csv files for the months
   # that means we'll have to scrape them from each year separately to get weeks
-  for i in range(12):
+  for i in range(13):
     year = 2006 + i
 
     # build payload for this year

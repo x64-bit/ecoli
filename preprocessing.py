@@ -5,15 +5,15 @@ I know I could do that in the same file as the other ones, just feel like it's
 neater here.
 """
 # TODO
-# pacific [x]
-# mountain [x]
-# new england [x]
-# middle atlantic [x]
-# south atlantic [x]
-# east north central [x]
-# east south central [x]
-# west north central [x]
-# west south central [x]
+# pacific
+# mountain
+# new england
+# middle atlantic
+# south atlantic
+# east north central
+# east south central
+# west north central
+# west south central
 
 # data wrangling
 import pandas as pd
@@ -25,7 +25,7 @@ from sklearn.metrics import mean_squared_error
 # just in case
 import matplotlib.pyplot as plt
 
-region = "west south central"
+region = "pacific"
 
 # will parse instead
 trends_df = pd.read_csv("data/{0}/SEARCH20XX.csv".format(region))
@@ -38,7 +38,7 @@ epi_df = pd.DataFrame()
 # if you open multiple years in Google Trends, it will only let you download
 # .csv files for the months
 # that means we'll have to scrape them from each year separately to get weeks
-for i in range(12):
+for i in range(13):
   year = 2006 + i
   
   # append new epidemic data
