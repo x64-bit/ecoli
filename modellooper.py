@@ -83,7 +83,7 @@ for region in regions:
     print(Y_train.shape)
 
     # print("\n\n-------------------\nFit Numero Uno\n\n")
-    model.fit(X_train, Y_train, epochs=100, batch_size=1,
+    model.fit(X_train, Y_train, epochs=250, batch_size=1,
                 shuffle=False, validation_data=(x_arr, y_arr))
 
     # predicc
