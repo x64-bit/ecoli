@@ -63,11 +63,12 @@ def build_model():
 model = build_model()
 
 for region in regions:
+    # read data
     agg_df = pd.read_csv("data/{0}/AGGDATA.csv".format(region))
     pred_df = pd.read_csv("data/{0}/PREDDATA.csv".format(region))
 
     x_arr = np.asarray(agg_df)
-    x_arr = x_arr.reshape(624, 1, 6)
+    x_arr = x_arr.reshape(676, 1, 6)
 
     y_arr = np.asarray(pred_df)
 
@@ -84,12 +85,6 @@ for region in regions:
     # print("\n\n-------------------\nFit Numero Uno\n\n")
     model.fit(X_train, Y_train, epochs=100, batch_size=1,
                 shuffle=False, validation_data=(x_arr, y_arr))
-    split = int(round(0.8 * x_arr.shape[0]))
-    print("Training data has", split, "rows")
-    X_train = x_arr[:split, :, :]
-    Y_train = y_arr[:split, :]
-    x_test = x_arr[split:, :, :]
-    y_test = y_arr[split:, ]
 
     # predicc
     predicted = model.predict(x_test)
@@ -104,8 +99,8 @@ for region in regions:
 
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    ax.plot(y_test[:100])
-    plt.plot(predicted[:100])
+    ax.plot(y_test[:250])
+    plt.plot(predicted[:250])
     plt.savefig("test.png")
     plt.close()
 
@@ -114,7 +109,7 @@ pred_df = pd.read_csv("data/pacific/PREDDATA.csv")
 naive_df = agg_df.loc[:, "Cases"]
 
 x_arr = np.asarray(agg_df)
-x_arr = x_arr.reshape(624, 1, 6)
+x_arr = x_arr.reshape(676, 1, 6)
 
 y_arr = np.asarray(pred_df)
 baseline = np.asarray(naive_df)
@@ -139,7 +134,7 @@ print("rmse=", rmse)
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
-ax.plot(y_test[:100])
-plt.plot(predicted[:100])
+ax.plot(y_test[:250])
+plt.plot(predicted[:250])
 plt.savefig("test.png")
 plt.close()

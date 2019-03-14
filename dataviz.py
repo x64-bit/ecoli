@@ -48,7 +48,7 @@ for region in regions:
     pred_df = pd.read_csv("data/{0}/PREDDATA.csv".format(region))
 
     x_arr = np.asarray(agg_df)
-    x_arr = x_arr.reshape(624, 1, 6)
+    x_arr = x_arr.reshape(676, 1, 6)
 
     y_arr = np.asarray(pred_df)
     print(pred_df)
