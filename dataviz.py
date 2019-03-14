@@ -1,5 +1,4 @@
-"""Attempt to perform 9-fold crossvalidation. Achieves an RMSE of ~4.5
-after 250 epochs.
+"""Testing graphing
 
 Author: Anjo P.
 Date: 2/20/19

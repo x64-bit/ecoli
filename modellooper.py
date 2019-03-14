@@ -22,6 +22,9 @@ from keras.layers.recurrent import LSTM
 from keras.models import Sequential
 from keras.optimizers import adam
 
+# etc
+import os
+
 # pacific
 # mountain
 # new england
@@ -43,7 +46,10 @@ regions = ["pacific",
     "west north central",
     "west south central"]
 
-epochs = 1
+epochs = 200
+rmse_array = []
+mae_array = []
+fold_num = 0
 
 def build_model():
     """Builds a model"""
@@ -65,6 +71,7 @@ def build_model():
     return temp_model
 
 for removed_region in regions:
+    """THIS LOOP TRAINS PER FOLD"""
     print("\n\n\nBeginning new fold...\n-----------------------------\n\n\n")
     print("Removing region", removed_region,
           "\n\n\n-----------------------------")
@@ -73,9 +80,17 @@ for removed_region in regions:
 
     print("Building new model...\n\n\n-----------------------------")
     model = build_model()
+
+    print("Creating filepath...")
+    # create path to save models, metrics
+    save_path = "models/fold" + str(fold_num) + "/"
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
     
     for region in temp_regions:
+        """THIS LOOP TRAINS PER SAMPLE"""
         print("Training on regions", temp_regions)
+
         # read data from specified region
         agg_df = pd.read_csv("data/{0}/AGGDATA.csv".format(region))
         pred_df = pd.read_csv("data/{0}/PREDDATA.csv".format(region))
@@ -100,31 +115,70 @@ for removed_region in regions:
         x_test = x_arr[val_split:, :, :]
         y_test = y_arr[val_split:, ]
 
-        print(X_train.shape)
-        print(Y_train.shape)
-
         # fit on sample for 250 epochs
-        model.fit(X_train, Y_train, epochs=epochs, batch_size=1,
-                    shuffle=False, validation_data=(x_arr, y_arr))
+        history = model.fit(X_train, Y_train, epochs=epochs, batch_size=1,
+                    shuffle=False, validation_data=(x_val, y_val))
 
         """Create predictions"""
-        predicted = model.predict(x_test)
+        predicted = model.predict(x_val)
         predicted = np.reshape(predicted, (predicted.size,))
-        print("\n")
-        print(predicted.shape)
-        print(y_test.shape)
-        print("\n")
-
-        rmse = sqrt(mean_squared_error(y_test, predicted))
-        mae = mean_absolute_error(y_test, predicted)
-        print("rmse=", rmse)
-        print("mae=", mae)
-
+        
+        # val metrics
+        val_rmse = sqrt(mean_squared_error(y_val, predicted))
+        val_mae = mean_absolute_error(y_val, predicted)
+        print("val_rmse=", val_rmse)
+        print("val_mae=", val_mae)
+        
+        """
         fig = plt.figure()
         ax = fig.add_subplot(111)
-        ax.plot(y_test[:100])
-        plt.plot(predicted[:100])
+        ax.plot(y_val)
+        plt.plot(predicted)
         plt.savefig("test.png")
         plt.close()
+        """
+        model.save(save_path + "{0} removed.h5".format(removed_region))
     
-    model.save("models/{0} removed.h5".format(removed_region))
+    """Create model predictions for this fold"""
+    predicted = model.predict(x_test)
+    predicted = np.reshape(predicted, (predicted.size,))
+
+    # metrics for this fold
+    test_rmse = sqrt(mean_squared_error(y_test, predicted))
+    test_mae = mean_absolute_error(y_test, predicted)
+    print("test_rmse=", test_rmse)
+    print("test_mae=", test_mae)
+
+    rmse_array.append(test_rmse)
+    mae_array.append(test_mae)
+
+    # plot
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.plot(y_test)
+    plt.plot(predicted)
+    plt.title("Model Predictions: " + str(epochs) + " epochs")
+    plt.xlabel("Weeks")
+    plt.xticks(np.arange(0, len(y_test), 5))
+    plt.ylabel("Cases of E. coli")
+    plt.yticks(np.arange(0,101,5))
+    plt.savefig(save_path + "{0} removed predictions.png".format(removed_region))
+    plt.close()
+    
+    fold_num+=1
+
+result_rmse = np.mean(rmse_array)
+result_mae = np.mean(mae_array)
+
+# write scores
+with open("C:/Users/Walter/Documents/GitHub/ecoli/models/scores.txt", 'w+') as scores:
+    scores.write("rmse values:\n")
+    for i in rmse_array:
+        scores.write(str(i))
+        scores.write('\n')
+    scores.write("mae values:\n")
+    for i in mae_array:
+        scores.write(str(i))
+        scores.write('\n')
+    scores.write('avg. rmse: ' + str(result_rmse) + "\n")
+    scores.write('avg. mae: ' + str(result_mae))
